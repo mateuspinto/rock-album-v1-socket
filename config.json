@@ -1,0 +1,7 @@
+{
+    "HOST": "localhost",
+    "PORT": 50007,
+    "BUFFSIZE": 4096,
+    "ENCODE_FORMAT": "utf-8",
+    "LISTEN": 1
+}
