@@ -3,5 +3,6 @@
     "PORT": 50007,
     "BUFFSIZE": 4096,
     "ENCODE_FORMAT": "utf-8",
-    "LISTEN": 1
+    "LISTEN": 1,
+    "SQLITE_FILE": "db.sqlite3"
 }
