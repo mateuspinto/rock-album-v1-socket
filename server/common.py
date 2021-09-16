@@ -16,7 +16,9 @@ def router(request, database):
         'buy_sticker_pack': rt.buy_sticker_pack,
         'paste_sticker': rt.paste_sticker,
         'view_album': rt.view_album,
-        'view_all_unpasted_stickers': rt.view_all_unpasted_stickers,
+        'view_free_stickers': rt.view_free_stickers,
+        'sell_sticker': rt.sell_sticker,
+        'view_stickers_waiting_for_sale': rt.view_stickers_waiting_for_sale,
     }
 
     return MW[request['method']](request, database)

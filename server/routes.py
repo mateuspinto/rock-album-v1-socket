@@ -90,7 +90,7 @@ def get_coins(request, database):
 
 def __exist_sticker_model(request, database):
     DB_CUR = database.cursor()
-    QUERY_RESULT = DB_CUR.execute(f'SELECT * FROM sticker_models WHERE name="{request["sticker_model_name"]}"')
+    QUERY_RESULT = DB_CUR.execute(f'SELECT * FROM sticker_models WHERE name="{request["sticker_name"]}"')
     if len(list(QUERY_RESULT)) == 1:
         return {'error': 0}
     else:
@@ -99,7 +99,7 @@ def __exist_sticker_model(request, database):
 
 def create_sticker_model(request, database):
     DB_CUR = database.cursor()
-    DB_CUR.execute(f'INSERT INTO sticker_models VALUES ("{request["sticker_model_name"]}")')
+    DB_CUR.execute(f'INSERT INTO sticker_models VALUES ("{request["sticker_name"]}")')
     database.commit()
     return {'error': 0}
 
@@ -110,7 +110,7 @@ def print_stickers(request, database):
 
     DB_CUR = database.cursor()
     for _ in range(request["sticker_print_number"]):
-        DB_CUR.execute(f'INSERT INTO sticker_prints (sticker_models_name, owner_user_email, is_pasted, is_for_sale, sale_price) VALUES ("{request["sticker_model_name"]}", "", 0, 0, 0)')
+        DB_CUR.execute(f'INSERT INTO sticker_prints (sticker_models_name, owner_user_email, is_pasted, is_for_sale, sale_price) VALUES ("{request["sticker_name"]}", "", 0, 0, 0)')
     database.commit()
     return {'error': 0}
 
@@ -131,22 +131,32 @@ def buy_sticker_pack(request, database):
 
     database.commit()
 
-    return {'error': 0, 'won_stickers': [{'id': idf, 'sticker_model_name': sticker_model_name} for idf, sticker_model_name in WON_STICKERS]}
+    return {'error': 0, 'won_stickers': [{'id': idf, 'sticker_name': sticker_name} for idf, sticker_name in WON_STICKERS]}
 
 
 def __is_this_sticker_model_pasted(request, database):
     DB_CUR = database.cursor()
+    STICKER_NAME = list(DB_CUR.execute(f'SELECT sticker_models_name FROM sticker_prints WHERE id={request["sticker_id"]}'))[0][0]
 
-    if list(DB_CUR.execute(f'SELECT COUNT(*) FROM sticker_prints WHERE id="{request["sticker_print_id"]}" AND owner_user_email="{request["email"]}" AND is_pasted=1'))[0][0] == 1:
+    if list(DB_CUR.execute(f'SELECT COUNT(*) FROM sticker_prints WHERE sticker_models_name="{STICKER_NAME}" AND owner_user_email="{request["email"]}" AND is_pasted=1'))[0][0] == 1:
         return {'error': 0}
     else:
         return {'error': 1, 'error_message': 'O modelo de figurinha não está colado!'}
 
 
+def __is_this_sticker_waiting_for_sale(request, database):
+    DB_CUR = database.cursor()
+
+    if list(DB_CUR.execute(f'SELECT COUNT(*) FROM sticker_prints WHERE id="{request["sticker_id"]}" AND is_for_sale=1'))[0][0] == 1:
+        return {'error': 0}
+    else:
+        return {'error': 1, 'error_message': 'Figurinha não está na fila para a venda!'}
+
+
 def __is_this_sticker_print_owned_by_the_user(request, database):
     DB_CUR = database.cursor()
 
-    if list(DB_CUR.execute(f'SELECT COUNT(*) FROM sticker_prints WHERE id="{request["sticker_print_id"]}" AND owner_user_email="{request["email"]}"'))[0][0] == 1:
+    if list(DB_CUR.execute(f'SELECT COUNT(*) FROM sticker_prints WHERE id="{request["sticker_id"]}" AND owner_user_email="{request["email"]}"'))[0][0] == 1:
         return {'error': 0}
     else:
         return {'error': 1, 'error_message': 'O usuário não é dono desta figurinha!'}
@@ -156,11 +166,14 @@ def paste_sticker(request, database):
     if __is_this_sticker_model_pasted(request, database)['error'] == 0:
         return {'error': 1, 'error_message': 'Não é possível colar esta figurinha! O modelo de figurinha já está colado.'}
 
+    if __is_this_sticker_waiting_for_sale(request, database)['error'] == 0:
+        return {'error': 1, 'error_message': 'Não é possível colar esta figurinha! Ela está na fila para a venda.'}
+
     if __is_this_sticker_print_owned_by_the_user(request, database)['error'] == 1:
         return {'error': 1, 'error_message': 'Erro ao colar figurinha! O usuário não é dono desta figurinha.'}
 
     DB_CUR = database.cursor()
-    DB_CUR.execute(f'UPDATE sticker_prints SET is_pasted=1 WHERE id="{request["sticker_print_id"]}"')
+    DB_CUR.execute(f'UPDATE sticker_prints SET is_pasted=1 WHERE id="{request["sticker_id"]}"')
     database.commit()
 
     return {'error': 0}
@@ -171,6 +184,32 @@ def view_album(request, database):
     return {'error': 0, 'stickers': [x[0] for x in list(DB_CUR.execute(f'SELECT sticker_models_name FROM sticker_prints WHERE owner_user_email="{request["email"]}" AND is_pasted=1'))]}
 
 
-def view_all_unpasted_stickers(request, database):
+def view_stickers_waiting_for_sale(request, database):
     DB_CUR = database.cursor()
-    return {'error': 0, 'stickers': [{'id': x[0], 'sticker_model_name': x[1]} for x in list(DB_CUR.execute(f'SELECT id, sticker_models_name FROM sticker_prints WHERE owner_user_email="{request["email"]}" AND is_pasted=0'))]}
+    return {'error': 0, 'stickers': [x[0] for x in list(DB_CUR.execute(f'SELECT sticker_models_name FROM sticker_prints WHERE owner_user_email="{request["email"]}" AND is_for_sale=1'))]}
+
+
+def view_free_stickers(request, database):
+    DB_CUR = database.cursor()
+    return {'error': 0, 'stickers': [{'id': x[0], 'sticker_name': x[1]} for x in list(DB_CUR.execute(f'SELECT id, sticker_models_name FROM sticker_prints WHERE owner_user_email="{request["email"]}" AND is_pasted=0 AND is_for_sale=0'))]}
+
+
+def sell_sticker(request, database):
+    DB_CUR = database.cursor()
+
+    if __is_this_sticker_print_owned_by_the_user(request, database)['error'] == 1:
+        return {'error': 1, 'error_message': 'Erro ao colocar figurinha a venda! O usuário não é dono desta figurinha.'}
+
+    DB_CUR.execute(f'UPDATE sticker_prints SET is_for_sale=1, sale_price={request["sale_price"]} WHERE id="{request["sticker_id"]}"')
+    database.commit()
+
+    return {'error': 0}
+
+
+def get_stickers_price(request, database):
+    DB_CUR = database.cursor()
+    QUERRY_RESULT = list(DB_CUR.execute(f'SELECT sale_price FROM sticker_prints WHERE sale_price=(SELECT MIN(sale_price) FROM sticker_prints WHERE sticker_models_name="{request["sticker_name"]}" AND is_for_sale=1)'))
+    if len(QUERRY_RESULT) == 0:
+        return {'error': 0, 'error_message': 'Não foi possível retornar preço da figurinha! Não há nenhuma figurinha desse modelo a venda!'}
+
+    return {'error': 0, 'sale_price': QUERRY_RESULT[0][0]}
