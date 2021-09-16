@@ -10,7 +10,7 @@ def login(request, database):
         return {'error': 1, 'error_message': 'Usuário não encontrado!'}
 
 
-def __is_admin(request, database):
+def is_admin(request, database):
     DB_CUR = database.cursor()
     QUERY_RESULT = DB_CUR.execute(f'SELECT is_admin FROM users WHERE email="{request["email"]}" AND password="{request["password"]}"')
     if next(QUERY_RESULT)[0] == 1:
@@ -33,6 +33,20 @@ def register(request, database):
         return {'error': 1, 'error_message': 'Falha no cadastro! Email já está em uso.'}
 
     DB_CUR = database.cursor()
-    DB_CUR.execute(f'INSERT INTO users VALUES ("{request["email"]}", "{request["password"]}", 0)')
+    DB_CUR.execute(f'INSERT INTO users VALUES ("{request["email"]}", "{request["password"]}", 0, 0)')
+    database.commit()
+    return {'error': 0}
+
+
+def op(request, database):
+    DB_CUR = database.cursor()
+    DB_CUR.execute(f'UPDATE users SET is_admin = 1 WHERE email="{request["target_email"]}"')
+    database.commit()
+    return {'error': 0}
+
+
+def unop(request, database):
+    DB_CUR = database.cursor()
+    DB_CUR.execute(f'UPDATE users SET is_admin = 0 WHERE email="{request["target_email"]}"')
     database.commit()
     return {'error': 0}
