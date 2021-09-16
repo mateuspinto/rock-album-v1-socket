@@ -10,6 +10,10 @@ def router(request, database):
         'unop': rt.unop,
         'create_giftcard': rt.create_giftcard,
         'retrieve_giftcard': rt.retrieve_giftcard,
+        'get_coins': rt.get_coins,
+        'create_sticker_model': rt.create_sticker_model,
+        'print_stickers': rt.print_stickers,
+        'buy_sticker_pack': rt.buy_sticker_pack,
     }
 
     return MW[request['method']](request, database)
