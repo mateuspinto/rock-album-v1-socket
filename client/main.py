@@ -1,6 +1,6 @@
 import json
 
-from aux_rotes import register, login, is_admin
+import auxiliary as aux
 import routes
 
 CFG = json.load(open('config.json'))
@@ -48,9 +48,8 @@ def router(EMAIL, IS_ADMIN):
         input('Aperte enter para continuar...')
 
 
-EMAIL = register() if input("Você deseja criar cadastro? [N,s] ") == 's' else login()
-IS_ADMIN = is_admin(EMAIL)
-
-print()
-
-router(EMAIL, IS_ADMIN)
+if __name__ == "__main__":
+    EMAIL = aux.register() if input("Você deseja criar cadastro? [N,s] ") == 's' else aux.login()
+    IS_ADMIN = aux.is_admin(EMAIL)
+    print()
+    router(EMAIL, IS_ADMIN)

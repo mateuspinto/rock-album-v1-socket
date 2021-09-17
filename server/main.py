@@ -6,7 +6,7 @@ import sqlite3
 import routes
 
 
-def router(request, database):
+def router(REQUEST, DATABASE):
     MW = {
         'admin/create_giftcard': routes.admin__create_giftcard,
         'admin/create_stickers': routes.admin__create_stickers,
@@ -32,25 +32,25 @@ def router(request, database):
         'official_market/buy_sticker_pack': routes.official_market__buy_sticker_pack,
     }
 
-    return MW.get(request['method'], lambda *_: {'error': 1, 'error_message': 'Método não encontrado!'})(request, database)
+    return MW.get(REQUEST['method'], lambda *_: {'error': 1, 'error_message': 'Método não encontrado!'})(REQUEST, DATABASE)
 
 
-CFG = json.load(open('config.json'))
+if __name__ == "__main__":
+    CFG = json.load(open('config.json'))
 
-with sqlite3.connect(CFG['SQLITE_FILE']) as DB, socket.socket(socket.AF_INET, socket.SOCK_STREAM) as SCK:
-    SCK.bind((CFG['HOST'], CFG['PORT']))
-    SCK.listen(CFG['LISTEN'])
-    print(f'{datetime.now()} :: [INFO] Servidor online;')
+    with sqlite3.connect(CFG['SQLITE_FILE']) as DB, socket.socket(socket.AF_INET, socket.SOCK_STREAM) as SCK:
+        SCK.bind((CFG['HOST'], CFG['PORT']))
+        SCK.listen(CFG['LISTEN'])
+        print(f'{datetime.now()} :: [INFO] Servidor online;')
 
-    while True:
-        connection, address = SCK.accept()
-        print(f'{datetime.now()} :: [INFO] Conectado a {address[0]}:{address[1]};')
+        while True:
+            CONNECTION, ADDRESS = SCK.accept()
+            print(f'{datetime.now()} :: [INFO] Conectado a {ADDRESS[0]}:{ADDRESS[1]};')
 
-        with connection:
-            request = json.loads(connection.recv(CFG['BUFFSIZE']).decode(CFG['ENCODE_FORMAT']))
-            print(f'{datetime.now()} :: [DEBUG] Recebido JSON de Requisição = {request};')
+            REQUEST = json.loads(CONNECTION.recv(CFG['BUFFSIZE']).decode(CFG['ENCODE_FORMAT']))
+            print(f'{datetime.now()} :: [DEBUG] Recebido JSON de Requisição = {REQUEST};')
 
-            response = router(request, DB)
+            RESPONSE = router(REQUEST, DB)
 
-            connection.sendall(json.dumps(response).encode(CFG['ENCODE_FORMAT']))
-            print(f'{datetime.now()} :: [DEBUG] Enviando JSON de Resposta = {response};')
+            CONNECTION.sendall(json.dumps(RESPONSE).encode(CFG['ENCODE_FORMAT']))
+            print(f'{datetime.now()} :: [DEBUG] Enviando JSON de Resposta = {RESPONSE};')
