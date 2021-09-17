@@ -20,6 +20,7 @@ def router(request, database):
 
         'community_market/buy_sticker': routes.community_market__buy_sticker,
         'community_market/get_sticker_price': routes.community_market__get_sticker_price,
+        'community_market/get_stickers_waiting_for_sale': routes.community_market__get_stickers_waiting_for_sale,
         'community_market/put_sticker_to_sell': routes.community_market__put_sticker_to_sell,
 
         'user/get_coins': routes.user__get_coins,

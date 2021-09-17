@@ -9,6 +9,14 @@ def __exist_giftcard(request, database):
         return {'error': 1, 'error_message': 'Giftcard não existente!'}
 
 
+def __exist_sticker(request, database):
+    DB_CUR = database.cursor()
+    if list(DB_CUR.execute(f'SELECT COUNT(*) FROM stickers WHERE id="{request["sticker_id"]}"'))[0][0] == 1:
+        return {'error': 0}
+    else:
+        return {'error': 1, 'error_message': 'Figurinha não existente!'}
+
+
 def __is_email_available(request, database):
     DB_CUR = database.cursor()
     if list(DB_CUR.execute(f'SELECT COUNT(*) FROM users WHERE email="{request["email"]}"'))[0][0] == 1:
@@ -71,6 +79,9 @@ def admin__draw_lucky_prize(request, database):
 
 
 def admin__op(request, database):
+    if __is_email_available(request, database) == 0:
+        return {'error': 1, 'error_message': 'Não é possível tornar esse usuário um administrador! Email não encontrado.'}
+
     DB_CUR = database.cursor()
     DB_CUR.execute(f'UPDATE users SET is_admin = 1 WHERE email="{request["target_email"]}"')
     database.commit()
@@ -78,6 +89,9 @@ def admin__op(request, database):
 
 
 def admin__unop(request, database):
+    if __is_email_available(request, database) == 0:
+        return {'error': 1, 'error_message': 'Não é possível tornar esse usuário um administrador! Email não encontrado.'}
+
     DB_CUR = database.cursor()
     DB_CUR.execute(f'UPDATE users SET is_admin = 0 WHERE email="{request["target_email"]}"')
     database.commit()
@@ -95,6 +109,9 @@ def album__get_free_stickers(request, database):
 
 
 def album__paste_sticker(request, database):
+    if __exist_sticker(request, database)['error'] == 1:
+        return {'error': 1, 'error_message': 'Não é possível colar esta figurinha! A figurinha não existe.'}
+
     if __is_this_sticker_model_pasted(request, database)['error'] == 0:
         return {'error': 1, 'error_message': 'Não é possível colar esta figurinha! O modelo de figurinha já está colado.'}
 
@@ -140,15 +157,17 @@ def community_market__get_sticker_price(request, database):
 
 def community_market__get_stickers_waiting_for_sale(request, database):
     DB_CUR = database.cursor()
-    return {'error': 0, 'stickers': [x[0] for x in list(DB_CUR.execute(f'SELECT name FROM stickers WHERE owner_email="{request["email"]}" AND is_for_sale=1'))]}
+    return {'error': 0, 'stickers': [{'sticker_name': x[0], 'price':x[1]} for x in list(DB_CUR.execute(f'SELECT name, price FROM stickers WHERE owner_email="{request["email"]}" AND is_for_sale=1'))]}
 
 
 def community_market__put_sticker_to_sell(request, database):
-    DB_CUR = database.cursor()
+    if __exist_sticker(request, database)['error'] == 1:
+        return {'error': 1, 'error_message': 'Não é possível vender esta figurinha! A figurinha não existe.'}
 
     if __is_this_sticker_owned_by_the_user(request, database)['error'] == 1:
         return {'error': 1, 'error_message': 'Erro ao colocar figurinha a venda! O usuário não é dono desta figurinha.'}
 
+    DB_CUR = database.cursor()
     DB_CUR.execute(f'UPDATE stickers SET is_for_sale=1, price={request["price"]} WHERE id="{request["sticker_id"]}"')
     database.commit()
     return {'error': 0}
@@ -214,4 +233,4 @@ def official_market__buy_sticker_pack(request, database):
 
     database.commit()
 
-    return {'error': 0, 'won_stickers': [{'id': idf, 'sticker_name': sticker_name} for idf, sticker_name in WON_STICKERS]}
+    return {'error': 0, 'stickers': [{'id': idf, 'sticker_name': sticker_name} for idf, sticker_name in WON_STICKERS]}
