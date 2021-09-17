@@ -49,7 +49,7 @@ def router(EMAIL, IS_ADMIN):
 
 
 if __name__ == "__main__":
-    EMAIL = aux.register() if input("Você deseja criar cadastro? [N,s] ") == 's' else aux.login()
+    EMAIL = aux.register() if input("Você deseja criar cadastro? [N/s] ").lower() == 's' else aux.login()
     IS_ADMIN = aux.is_admin(EMAIL)
     print()
     router(EMAIL, IS_ADMIN)
