@@ -66,7 +66,7 @@ def album__paste_sticker(REQUEST, DATABASE):
     if aux.is_this_sticker_waiting_for_sale(REQUEST, DATABASE) == 1:
         return {'error': 1, 'error_message': 'Não é possível colar esta figurinha! Ela está na fila para a venda.'}
 
-    if aux.is_this_sticker_owned_by_the_user(REQUEST, DATABASE) == 1:
+    if aux.is_this_sticker_owned_by_the_user(REQUEST, DATABASE) == 0:
         return {'error': 1, 'error_message': 'Erro ao colar figurinha! O usuário não é dono desta figurinha.'}
 
     DB_CUR = DATABASE.cursor()
