@@ -8,7 +8,7 @@ def admin__create_giftcard(EMAIL):
         'giftcard_key': input('Insira a chave do cartão presente: ')
     }
 
-    RESPONSE = aux.contact_to_server(REQUEST)
+    RESPONSE = aux.contact_server(REQUEST)
 
     if RESPONSE['error'] == 1:
         print(f'Erro! {RESPONSE["error_message"]}')
@@ -24,7 +24,7 @@ def admin__create_stickers(EMAIL):
         'sticker_number': int(input('Insira a quantidade de figurinhas: '))
     }
 
-    RESPONSE = aux.contact_to_server(REQUEST)
+    RESPONSE = aux.contact_server(REQUEST)
 
     if RESPONSE['error'] == 1:
         print(f'Erro! {RESPONSE["error_message"]}')
@@ -38,7 +38,7 @@ def admin__draw_lucky_prize(EMAIL):
         'email': EMAIL,
     }
 
-    RESPONSE = aux.contact_to_server(REQUEST)
+    RESPONSE = aux.contact_server(REQUEST)
 
     if RESPONSE['error'] == 1:
         print(f'Erro! {RESPONSE["error_message"]}')
@@ -53,7 +53,7 @@ def admin__op(EMAIL):
         'target_email': input('Insira o email a ser tornado administrador: '),
     }
 
-    RESPONSE = aux.contact_to_server(REQUEST)
+    RESPONSE = aux.contact_server(REQUEST)
 
     if RESPONSE['error'] == 1:
         print(f'Erro! {RESPONSE["error_message"]}')
@@ -68,7 +68,7 @@ def admin__unop(EMAIL):
         'target_email': input('Insira o email a ser removido de administrador: '),
     }
 
-    RESPONSE = aux.contact_to_server(REQUEST)
+    RESPONSE = aux.contact_server(REQUEST)
 
     if RESPONSE['error'] == 1:
         print(f'Erro! {RESPONSE["error_message"]}')
@@ -82,7 +82,7 @@ def album__get_album(EMAIL):
         'email': EMAIL,
     }
 
-    RESPONSE = aux.contact_to_server(REQUEST)
+    RESPONSE = aux.contact_server(REQUEST)
 
     if RESPONSE['error'] == 1:
         print(f'Erro! {RESPONSE["error_message"]}')
@@ -98,7 +98,7 @@ def album__get_free_stickers(EMAIL):
         'email': EMAIL,
     }
 
-    RESPONSE = aux.contact_to_server(REQUEST)
+    RESPONSE = aux.contact_server(REQUEST)
 
     if RESPONSE['error'] == 1:
         print(f'Erro! {RESPONSE["error_message"]}')
@@ -115,7 +115,7 @@ def album__paste_sticker(EMAIL):
         'sticker_id': input('Insira o ID da figurinha: '),
     }
 
-    RESPONSE = aux.contact_to_server(REQUEST)
+    RESPONSE = aux.contact_server(REQUEST)
 
     if RESPONSE['error'] == 1:
         print(f'Erro! {RESPONSE["error_message"]}')
@@ -130,7 +130,7 @@ def community_market__buy_sticker(EMAIL):
         'sticker_name': input('Insira o nome da figurinha: '),
     }
 
-    RESPONSE = aux.contact_to_server(REQUEST)
+    RESPONSE = aux.contact_server(REQUEST)
 
     if RESPONSE['error'] == 1:
         print(f'Erro! {RESPONSE["error_message"]}')
@@ -145,7 +145,7 @@ def community_market__get_sticker_price(EMAIL):
         'sticker_name': input('Insira o nome da figurinha: '),
     }
 
-    RESPONSE = aux.contact_to_server(REQUEST)
+    RESPONSE = aux.contact_server(REQUEST)
 
     if RESPONSE['error'] == 1:
         print(f'Erro! {RESPONSE["error_message"]}')
@@ -159,7 +159,7 @@ def community_market__get_stickers_waiting_for_sale(EMAIL):
         'email': EMAIL,
     }
 
-    RESPONSE = aux.contact_to_server(REQUEST)
+    RESPONSE = aux.contact_server(REQUEST)
 
     if RESPONSE['error'] == 1:
         print(f'Erro! {RESPONSE["error_message"]}')
@@ -177,7 +177,7 @@ def community_market__put_sticker_to_sell(EMAIL):
         'price': int(input('Insira o preço (em número inteiro) desejado na figurinha: '))
     }
 
-    RESPONSE = aux.contact_to_server(REQUEST)
+    RESPONSE = aux.contact_server(REQUEST)
 
     if RESPONSE['error'] == 1:
         print(f'Erro! {RESPONSE["error_message"]}')
@@ -191,7 +191,7 @@ def user__get_coins(EMAIL):
         'email': EMAIL,
     }
 
-    RESPONSE = aux.contact_to_server(REQUEST)
+    RESPONSE = aux.contact_server(REQUEST)
 
     if RESPONSE['error'] == 1:
         print(f'Erro! {RESPONSE["error_message"]}')
@@ -206,7 +206,7 @@ def user__retrieve_giftcard(EMAIL):
         'giftcard_key': input('Insira a chave do cartão presente: ')
     }
 
-    RESPONSE = aux.contact_to_server(REQUEST)
+    RESPONSE = aux.contact_server(REQUEST)
 
     if RESPONSE['error'] == 1:
         print(f'Erro! {RESPONSE["error_message"]}')
@@ -220,7 +220,7 @@ def official_market__buy_sticker_pack(EMAIL):
         'email': EMAIL,
     }
 
-    RESPONSE = aux.contact_to_server(REQUEST)
+    RESPONSE = aux.contact_server(REQUEST)
 
     if RESPONSE['error'] == 1:
         print(f'Erro! {RESPONSE["error_message"]}')

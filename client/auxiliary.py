@@ -4,7 +4,7 @@ import socket
 CFG = json.load(open('config.json'))
 
 
-def contact_to_server(REQUEST):
+def contact_server(REQUEST):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as SCK:
         SCK.connect((CFG['HOST'], CFG['PORT']))
         SCK.sendall(json.dumps(REQUEST).encode(CFG['ENCODE_FORMAT']))
@@ -18,7 +18,7 @@ def is_admin(EMAIL):
         'email': EMAIL
     }
 
-    RESPONSE = contact_to_server(REQUEST)
+    RESPONSE = contact_server(REQUEST)
 
     return not RESPONSE['error']
 
@@ -31,7 +31,7 @@ def login():
             'password': input('Digite a sua senha: ')
         }
 
-        RESPONSE = contact_to_server(REQUEST)
+        RESPONSE = contact_server(REQUEST)
 
         if RESPONSE['error'] == 1:
             print(f'Erro! {RESPONSE["error_message"]} Tente novamente...\n')
@@ -47,7 +47,7 @@ def register():
             'password': input('Digite a sua senha: ')
         }
 
-        RESPONSE = contact_to_server(REQUEST)
+        RESPONSE = contact_server(REQUEST)
 
         if RESPONSE['error'] == 1:
             print(f'Erro! {RESPONSE["error_message"]} Tente novamente...\n')
